@@ -1,0 +1,195 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function getUserStatus() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status;
+    }
+    
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+    
+    function isUniversityEmail() {
+      // Allow university emails or common email providers for testing
+      return request.auth.token.email.matches('.*@university\\.edu\\.ph$') ||
+             request.auth.token.email.matches('.*@gmail\\.(com|ph)$') ||
+             request.auth.token.email.matches('.*@yahoo\\.(com|ph)$') ||
+             request.auth.token.email.matches('.*@outlook\\.(com|ph)$') ||
+             request.auth.token.email.matches('.*@hotmail\\.(com|ph)$');
+    }
+    
+    function hasRole(role) {
+      return getUserRole() == role;
+    }
+    
+    function hasAnyRole(roles) {
+      return getUserRole() in roles;
+    }
+    
+    function isApprovedTeacher() {
+      return getUserRole() == 'research_teacher' && getUserStatus() == 'approved';
+    }
+    
+    function canManageUsers() {
+      return hasAnyRole(['research_director', 'vpaa']);
+    }
+    
+    function canApproveTeachers() {
+      return hasAnyRole(['research_director', 'vpaa']);
+    }
+    
+    function canManageBudget() {
+      return hasAnyRole(['vpaa', 'budget_office']);
+    }
+    
+    function canApprovePanel() {
+      return hasAnyRole(['research_director', 'vpaa']);
+    }
+    
+    function canViewAllPanels() {
+      return hasAnyRole(['research_director', 'research_staff', 'vpaa', 'budget_office']);
+    }
+
+    // Users collection - User profiles
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can create their own profile during registration
+      allow create: if isAuthenticated() && 
+                   request.auth.uid == userId && 
+                   isUniversityEmail() &&
+                   resource.data.email == request.auth.token.email;
+      
+      // Users can update their own profile (limited fields)
+      allow update: if isAuthenticated() && 
+                   request.auth.uid == userId &&
+                   // Only allow updating specific fields
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['displayName', 'department', 'phoneNumber', 'updatedAt', 'lastLogin']);
+      
+      // Admins can read all user profiles
+      allow read: if isAuthenticated() && canManageUsers();
+      
+      // Admins can update user roles and status
+      allow update: if isAuthenticated() && canApproveTeachers() &&
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['role', 'status', 'updatedAt']);
+    }
+
+    // Research panels collection
+    match /research_panels/{panelId} {
+      // Approved teachers can create panels
+      allow create: if isAuthenticated() && 
+                   isEmailVerified() && 
+                   (isApprovedTeacher() || hasAnyRole(['research_director'])) &&
+                   resource.data.createdBy == request.auth.uid;
+      
+      // Panel creators can read and update their own panels
+      allow read, update: if isAuthenticated() && 
+                         resource.data.createdBy == request.auth.uid;
+      
+      // Users who can view all panels
+      allow read: if isAuthenticated() && canViewAllPanels();
+      
+      // Users who can approve panels
+      allow update: if isAuthenticated() && 
+                   canApprovePanel() &&
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['status', 'approvedBy', 'approvedAt', 'comments', 'updatedAt']);
+      
+      // Budget office can update budget-related fields
+      allow update: if isAuthenticated() && 
+                   canManageBudget() &&
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['budgetStatus', 'budgetComments', 'budgetApprovedBy', 'budgetApprovedAt', 'updatedAt']);
+    }
+
+    // Panel members subcollection
+    match /research_panels/{panelId}/members/{memberId} {
+      // Panel creator can manage members
+      allow read, write: if isAuthenticated() && 
+                        get(/databases/$(database)/documents/research_panels/$(panelId)).data.createdBy == request.auth.uid;
+      
+      // Users who can view all panels can read members
+      allow read: if isAuthenticated() && canViewAllPanels();
+    }
+
+    // Reports collection
+    match /reports/{reportId} {
+      // Staff and above can create reports
+      allow create: if isAuthenticated() && 
+                   hasAnyRole(['research_staff', 'research_director', 'vpaa', 'budget_office']);
+      
+      // Users who can view reports
+      allow read: if isAuthenticated() && 
+                 hasAnyRole(['research_staff', 'research_director', 'vpaa', 'budget_office']);
+      
+      // Only report creators can update their reports
+      allow update: if isAuthenticated() && 
+                   resource.data.createdBy == request.auth.uid;
+    }
+
+    // Budget requests collection
+    match /budget_requests/{requestId} {
+      // Approved teachers and directors can create budget requests
+      allow create: if isAuthenticated() && 
+                   (isApprovedTeacher() || hasRole('research_director')) &&
+                   resource.data.requestedBy == request.auth.uid;
+      
+      // Requesters can read their own requests
+      allow read: if isAuthenticated() && 
+                 resource.data.requestedBy == request.auth.uid;
+      
+      // Budget office and VPAA can read all budget requests
+      allow read: if isAuthenticated() && canManageBudget();
+      
+      // Budget office can update budget requests
+      allow update: if isAuthenticated() && 
+                   canManageBudget() &&
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['status', 'comments', 'approvedBy', 'approvedAt', 'updatedAt']);
+    }
+
+    // Audit logs collection (read-only for admins)
+    match /audit_logs/{logId} {
+      allow read: if isAuthenticated() && hasAnyRole(['research_director', 'vpaa']);
+      allow create: if false; // Only server-side can create audit logs
+    }
+
+    // System settings (admin only)
+    match /system_settings/{settingId} {
+      allow read, write: if isAuthenticated() && hasRole('vpaa');
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && 
+                 resource.data.userId == request.auth.uid;
+      
+      // Users can update their notification status (mark as read)
+      allow update: if isAuthenticated() && 
+                   resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['read', 'readAt']);
+      
+      // System can create notifications (handled server-side)
+      allow create: if false;
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
