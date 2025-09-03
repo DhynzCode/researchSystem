@@ -6,16 +6,19 @@ import Dashboard from './pages/Dashboard';
 import PanelRequestForm from './pages/PanelRequestForm';
 import RequestDefense from './pages/RequestDefense';
 import DefenseRequestView from './pages/DefenseRequestView';
-import MatrixTable from './pages/MatrixTable';
+import Appearances from './pages/Appearances';
 import FacultyTracker from './pages/FacultyTracker';
-import ApprovalCenter from './pages/ApprovalCenter';
-import ApprovalRequestView from './pages/ApprovalRequestView';
+import DefenseRequest from './pages/DefenseRequest';
+import RequestDetails from './pages/RequestDetails';
 import HonorariumCalculator from './pages/HonorariumCalculator';
 import Reports from './pages/Reports';
 import ThesisSubmissions from './pages/ThesisSubmissions';
 import StudentClearanceStatus from './pages/StudentClearanceStatus';
+import SystemConfiguration from './pages/SystemConfiguration';
+import CalendarPage from './pages/CalendarPage';
 import { LoginForm } from './components/LoginForm';
 import { RegistrationForm } from './components/RegistrationForm';
+import { AccountCreator } from './components/AccountCreator';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LoadingProvider } from './contexts/LoadingContext';
@@ -62,13 +65,15 @@ const AppLayout: React.FC = () => {
       case 'research_teacher':
         return 'Research Teacher';
       case 'research_director':
-        return 'Research Director';
+        return 'CURI';
       case 'research_staff':
         return 'Finance Officer'; // Map to existing type
       case 'vpaa':
         return 'VPAA';
       case 'budget_office':
         return 'Finance Officer'; // Map to existing type
+      case 'dean':
+        return 'Dean';
       default:
         return 'Research Teacher';
     }
@@ -101,15 +106,17 @@ const AppLayout: React.FC = () => {
             {/* Legacy routes for backward compatibility */}
             <Route path="/request-defense" element={<RequestDefense />} />
             <Route path="/request-defense/:id" element={<DefenseRequestView />} />
-            <Route path="/matrix" element={<MatrixTable />} />
+            <Route path="/matrix" element={<Appearances />} />
             <Route path="/faculty-tracker" element={<FacultyTracker />} />
-            <Route path="/approval-center" element={<ApprovalCenter />} />
-            <Route path="/approval-center/request/:id" element={<ApprovalRequestView />} />
+            <Route path="/approval-center" element={<DefenseRequest />} />
+            <Route path="/approval-center/request/:id" element={<RequestDetails />} />
             {/* Repository module routes */}
             <Route path="/repository/thesis-submissions" element={<ThesisSubmissions />} />
             <Route path="/repository/student-clearance" element={<StudentClearanceStatus />} />
             <Route path="/honorarium" element={<HonorariumCalculator />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/system-configuration" element={<SystemConfiguration />} />
+            <Route path="/calendar" element={<CalendarPage />} />
             {/* Add more role-specific routes as needed */}
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/vpaa/dashboard" element={<Dashboard />} />
@@ -136,6 +143,7 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginForm />} />
               <Route path="/register" element={<RegistrationForm />} />
+              <Route path="/account-creator" element={<AccountCreator />} />
               
               {/* Protected Routes */}
               <Route path="/*" element={

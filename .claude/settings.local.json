@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 10 npx vite build --mode development)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(npx vite build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -221,7 +221,7 @@ export const RegistrationForm: React.FC = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Research Teacher Registration</h2>
-            <p className="mt-2 text-gray-600">Create your account to access the Research Panel System</p>
+            <p className="mt-2 text-gray-600">Create your account to access UZEARCH</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}

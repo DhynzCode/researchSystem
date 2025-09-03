@@ -23,6 +23,12 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
   const getFlaggedSteps = (status: DefenseRequestStatus): Step[] => {
     const steps = [
       {
+        id: 'program-chair',
+        title: 'Program Chair',
+        description: 'Program Chair approval',
+        status: 'pending' as const
+      },
+      {
         id: 'vpaa-justification',
         title: 'VPAA Review',
         description: 'Justification review',
@@ -62,24 +68,28 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
 
     switch (status) {
       case 'Draft':
+        steps[0].status = 'current';
         return steps;
       case 'Research Center Approved':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
-        steps[2].status = 'current';
+        steps[2].status = 'completed';
+        steps[3].status = 'current';
         return steps;
       case 'VPAA Approved':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
         steps[2].status = 'completed';
-        steps[3].status = 'current';
+        steps[3].status = 'completed';
+        steps[4].status = 'current';
         return steps;
       case 'Dean Approved':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
         steps[2].status = 'completed';
         steps[3].status = 'completed';
-        steps[4].status = 'current';
+        steps[4].status = 'completed';
+        steps[5].status = 'current';
         return steps;
       case 'Budget Approved':
         steps[0].status = 'completed';
@@ -88,15 +98,17 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
         steps[3].status = 'completed';
         steps[4].status = 'completed';
         steps[5].status = 'completed';
+        steps[6].status = 'completed';
         return steps;
       case 'Returned for Corrections':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
-        steps[2].status = 'current';
+        steps[2].status = 'completed';
+        steps[3].status = 'current';
         return steps;
       case 'Rejected':
         steps[0].status = 'completed';
-        return steps.map(step => ({ ...step, status: step.id === 'vpaa-justification' ? 'completed' : 'pending' }));
+        return steps.map(step => ({ ...step, status: step.id === 'program-chair' || step.id === 'vpaa-justification' ? 'completed' : 'pending' }));
       default:
         return steps;
     }
@@ -104,6 +116,12 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
 
   const getNonFlaggedSteps = (status: DefenseRequestStatus): Step[] => {
     const steps = [
+      {
+        id: 'program-chair',
+        title: 'Program Chair',
+        description: 'Program Chair approval',
+        status: 'pending' as const
+      },
       {
         id: 'research-center',
         title: 'Research Center',
@@ -132,34 +150,41 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({
 
     switch (status) {
       case 'Draft':
+        steps[0].status = 'current';
         return steps;
       case 'Research Center Approved':
         steps[0].status = 'completed';
-        steps[1].status = 'current';
+        steps[1].status = 'completed';
+        steps[2].status = 'current';
         return steps;
       case 'VPAA Approved':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
-        steps[2].status = 'current';
+        steps[2].status = 'completed';
+        steps[3].status = 'current';
         return steps;
       case 'Budget Approved':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
         steps[2].status = 'completed';
         steps[3].status = 'completed';
+        steps[4].status = 'completed';
         return steps;
       case 'Dean Approved':
-        // Map Dean Approved to Budget Review step for 4-step process
+        // Map Dean Approved to Budget Review step for 5-step process
+        steps[0].status = 'completed';
+        steps[1].status = 'completed';
+        steps[2].status = 'completed';
+        steps[3].status = 'current';
+        return steps;
+      case 'Returned for Corrections':
         steps[0].status = 'completed';
         steps[1].status = 'completed';
         steps[2].status = 'current';
         return steps;
-      case 'Returned for Corrections':
-        steps[0].status = 'completed';
-        steps[1].status = 'current';
-        return steps;
       case 'Rejected':
-        return steps.map(step => ({ ...step, status: 'pending' }));
+        steps[0].status = 'completed';
+        return steps.map((step, index) => ({ ...step, status: index === 0 ? 'completed' : 'pending' }));
       default:
         return steps;
     }

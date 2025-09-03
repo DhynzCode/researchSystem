@@ -254,7 +254,7 @@ export const LoginForm: React.FC = () => {
               <UserCheck className="h-6 w-6 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="mt-2 text-gray-600">Sign in to your Research Panel System account</p>
+            <p className="mt-2 text-gray-600">Sign in to your UZEARCH account</p>
           </div>
           {renderAccountStatusMessage()}
 

@@ -69,10 +69,10 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ currentRole, onRoleChange
           </button>
           
           <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200 hidden sm:block">
-            Research Panel Management System
+            UZEARCH
           </h1>
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 sm:hidden">
-            Panel System
+            UZEARCH
           </h1>
         </div>
 

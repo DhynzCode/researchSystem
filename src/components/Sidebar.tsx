@@ -15,7 +15,9 @@ import {
   Plus,
   List,
   BookOpen,
-  Users2
+  Users2,
+  Settings,
+  Calendar
 } from 'lucide-react';
 import { UserRole } from '../types';
 
@@ -57,35 +59,25 @@ const Sidebar: React.FC<SidebarProps> = ({ currentRole, isMobileMenuOpen, onMobi
   };
 
   const menuItems = [
-    { path: '/', icon: BarChart3, label: 'Dashboard', roles: ['Research Teacher', 'Research Director', 'VPAA', 'Finance Officer'] },
-    { path: '/matrix', icon: Grid3X3, label: 'Matrix Table', roles: ['Research Director', 'VPAA'] },
-    { path: '/approval-center', icon: CheckCircle, label: 'Approval Center', roles: ['VPAA'] },
+    { path: '/', icon: BarChart3, label: 'Dashboard', roles: ['Research Teacher', 'CURI', 'VPAA', 'Finance Officer', 'Dean'] },
+    { path: '/matrix', icon: Grid3X3, label: 'Appearances', roles: ['CURI', 'VPAA', 'Dean'] },
+    { path: '/approval-center', icon: CheckCircle, label: 'Defense Request', roles: ['CURI', 'VPAA', 'Dean'] },
     {
       key: 'request-defense',
       icon: Shield,
       label: 'Request Defense',
-      roles: ['Research Teacher', 'Research Director'],
+      roles: ['Research Teacher'],
       hasDropdown: true,
       subItems: [
-        { path: '/defense-form', icon: Plus, label: 'Defense Form', roles: ['Research Teacher', 'Research Director'] },
-        { path: '/defense-records', icon: List, label: 'Defense Records', roles: ['Research Teacher', 'Research Director'] },
-        { path: '/approval-center', icon: CheckCircle, label: 'Approval Center', roles: ['Research Director'] }
+        { path: '/defense-form', icon: Plus, label: 'Defense Form', roles: ['Research Teacher'] },
+        { path: '/defense-records', icon: List, label: 'Defense Records', roles: ['Research Teacher'] }
       ]
     },
-    {
-      key: 'repository',
-      icon: BookOpen,
-      label: 'Repository',
-      roles: ['Research Teacher', 'Research Director', 'VPAA'],
-      hasDropdown: true,
-      subItems: [
-        { path: '/repository/thesis-submissions', icon: BookOpen, label: 'Thesis Submissions' },
-        { path: '/repository/student-clearance', icon: Users2, label: 'Student Clearance Status' }
-      ]
-    },
-    { path: '/faculty-tracker', icon: Users, label: 'Faculty Tracker', roles: ['Research Teacher', 'Research Director'] },
+    { path: '/calendar', icon: Calendar, label: 'Calendar', roles: ['Research Teacher', 'CURI', 'VPAA', 'Dean'] },
+    { path: '/faculty-tracker', icon: Users, label: 'Faculty Tracker', roles: ['Research Teacher', 'CURI', 'Dean'] },
     { path: '/honorarium', icon: Calculator, label: 'Honorarium Calculator', roles: ['Finance Officer'] },
-    { path: '/reports', icon: FileBarChart, label: 'Reports & Logs', roles: ['Research Director', 'VPAA', 'Finance Officer'] },
+    { path: '/reports', icon: FileBarChart, label: 'Reports & Logs', roles: ['Finance Officer'] },
+    { path: '/system-configuration', icon: Settings, label: 'System Configuration', roles: ['CURI'] },
   ];
 
   const isPathActive = (path: string) => location.pathname === path;

@@ -1,4 +1,4 @@
-export type UserRole = 'Research Teacher' | 'Research Director' | 'VPAA' | 'Finance Officer';
+export type UserRole = 'Research Teacher' | 'CURI' | 'VPAA' | 'Finance Officer' | 'Dean';
 
 export type ProgramLevel = 'Basic Education' | 'Tertiary Level (College & Off-site branches)' | 'SGS Masters & FS' | 'SGS Doctorate Program';
 
@@ -99,7 +99,7 @@ export interface MatrixData {
   appearances: FacultyAppearance[];
 }
 
-export interface MatrixTableRow {
+export interface AppearanceTableRow {
   facultyName: string;
   appearances: {
     [categoryId: string]: {
@@ -123,4 +123,117 @@ export interface DefenseRequest {
   updatedAt: string;
   requesterId: string;
   requesterName: string;
+}
+
+// System Configuration Types
+export interface AcademicProgram {
+  id: string;
+  name: string;
+  code: string;
+  departmentId: string;
+  programLevelId: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProgramLevel {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface DepartmentConfig {
+  id: string;
+  name: string;
+  code: string;
+  fullName: string;
+  isActive: boolean;
+  specialRules?: AppearanceLimitRule[];
+}
+
+export interface FeeStructure {
+  id: string;
+  academicYear: string;
+  programLevelId: string;
+  programId?: string;
+  defenseType: DefenseType;
+  fees: {
+    [role in PanelRole]?: {
+      preOral?: number;
+      final?: number;
+    };
+  };
+  packageOptions: {
+    pureQuantitative: {
+      preOral: number;
+      final: number;
+    };
+    pureQualitative: {
+      preOral: number;
+      final: number;
+    };
+    perStudent: {
+      preOral: number;
+      final: number;
+    };
+  };
+  isActive: boolean;
+  effectiveDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AppearanceLimitRule {
+  id: string;
+  role: PanelRole;
+  programLevelId: string;
+  departmentId?: string;
+  limit: number;
+  isSpecialRule: boolean;
+  description?: string;
+  effectiveDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SystemSettings {
+  id: string;
+  currentAcademicYear: string;
+  activeSemesters: string[];
+  defensePeriods: {
+    firstSemester: {
+      start: string;
+      end: string;
+    };
+    secondSemester: {
+      start: string;
+      end: string;
+    };
+  };
+  emailSettings: {
+    universityDomain: string;
+    curiEmail: string;
+    autoNotifications: boolean;
+    approvalReminderInterval: number;
+  };
+  fileUploadSettings: {
+    maxFileSize: number;
+    allowedFormats: string[];
+    storageLocation: string;
+  };
+  updatedAt: string;
+}
+
+export interface ConfigurationHistory {
+  id: string;
+  entityType: 'fee_structure' | 'appearance_limit' | 'system_settings' | 'academic_program';
+  entityId: string;
+  action: 'create' | 'update' | 'delete' | 'activate' | 'deactivate';
+  changes: any;
+  userId: string;
+  userName: string;
+  createdAt: string;
 }

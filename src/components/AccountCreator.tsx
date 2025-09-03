@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createResearchTeacherAccount, createResearchDirectorAccount, createVPAAAccount, createBudgetOfficeAccount } from '../utils/createTestAccounts';
+import { createResearchTeacherAccount, createResearchDirectorAccount, createVPAAAccount, createBudgetOfficeAccount, createDeanAccount } from '../utils/createTestAccounts';
 
 export const AccountCreator: React.FC = () => {
   const [creating, setCreating] = useState(false);
@@ -53,6 +53,18 @@ export const AccountCreator: React.FC = () => {
     }
   };
 
+  const handleCreateDean = async () => {
+    setCreating(true);
+    try {
+      const result = await createDeanAccount();
+      setResults(prev => [...prev, { type: 'Dean', ...result }]);
+    } catch (error) {
+      setResults(prev => [...prev, { type: 'Dean', success: false, message: 'Failed to create account' }]);
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const clearResults = () => {
     setResults([]);
   };
@@ -63,7 +75,7 @@ export const AccountCreator: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Create Test Accounts</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             {/* Research Teacher */}
             <div className="bg-blue-50 rounded-lg p-4">
               <h3 className="font-semibold text-blue-900 mb-2">Research Teacher</h3>
@@ -133,6 +145,24 @@ export const AccountCreator: React.FC = () => {
                 className="w-full bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700 disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Create Budget'}
+              </button>
+            </div>
+
+            {/* Dean */}
+            <div className="bg-indigo-50 rounded-lg p-4">
+              <h3 className="font-semibold text-indigo-900 mb-2">Dean</h3>
+              <div className="text-sm text-indigo-800 mb-3">
+                <p>Email: dean@gmail.com</p>
+                <p>Password: dean123!</p>
+                <p>Status: Active</p>
+                <p>Department: Dean Office</p>
+              </div>
+              <button
+                onClick={handleCreateDean}
+                disabled={creating}
+                className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {creating ? 'Creating...' : 'Create Dean'}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-# Firebase Setup Guide for Research Panel Management System
+# Firebase Setup Guide for UZEARCH
 
 ## Prerequisites
 
